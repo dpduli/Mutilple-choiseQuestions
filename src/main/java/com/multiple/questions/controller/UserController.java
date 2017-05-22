@@ -21,7 +21,7 @@ public class UserController {
 		return "customLogin";
 	}
 
-	@RequestMapping(value = "/home")
+	@RequestMapping(value = "/home", method=RequestMethod.GET)
 	public String home(ModelMap model, Authentication authentication) {
 		authentication.getPrincipal();
 		model.addAttribute("user", userService.getDataByUserName(authentication.getName()));

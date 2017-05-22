@@ -9,14 +9,14 @@
 	<http>
 		<intercept-url  pattern="/user/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')" />
 		<form-login 
-		   login-page="/customLogin.jsp" 
+		   login-page="/customLogin" 
 		   login-processing-url="/appLogin"
 		   username-parameter="app_username"
 		   password-parameter="app_password"
-		   default-target-url="/user/home"/>
+		   default-target-url="/home"/>
 		<logout 
 		   logout-url="/appLogout" 
-		   logout-success-url="/customLogin.jsp"/>  
+		   logout-success-url="/customLogin"/>  
 		<access-denied-handler error-page="/user/error"/>
 	</http>
 	<beans:bean name="bcryptEncoder"

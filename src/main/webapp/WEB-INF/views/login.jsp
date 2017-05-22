@@ -114,20 +114,21 @@ h1 {
 			<div class="divider"></div>
 		</div>
 		<div class="signup-screen">
-			<form class="col s12 form-register" action="loginProcess" method="POST">
+			<form class="col s12 form-register" action="<%=request.getContextPath()%>/appLogin" method="POST">
 
 				<div class="input-field col s12">
 					<i class="material-icons prefix">perm_identity</i> <input
-						id="last_name" type="text" class="validate"
-						ng-model="registerForm.userName" required> <label
-						for="last_name">User Name</label>
+						id="app_username" type="text" class="validate"
+						name="app_username" required> 
+						<label for="app_username">User Name</label>
 				</div>
 
 
 				<div class="input-field col s12">
-					<i class="material-icons prefix">vpn_key</i> <input id="password"
-						type="password" class="validate" ng-model="registerForm.password"
-						required> <label for="password">Password</label>
+					<i class="material-icons prefix">vpn_key</i> <input id="app_password"
+						type="password" class="validate" 
+						name="app_password" required> 
+						<label for="app_password">Password</label>
 				</div>
 				<br/>
 

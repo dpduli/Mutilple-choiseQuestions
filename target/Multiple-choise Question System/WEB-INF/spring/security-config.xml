@@ -22,9 +22,9 @@
 	<beans:bean name="bcryptEncoder"
 	      class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>	
 	<beans:bean name="myAppUserDetailsService"
-	      class="com.concretepage.service.MyAppUserDetailsService"/>
+	      class="com.multiple.questions.service.MyAppUserDetailsService"/>
 	<beans:bean name="userService"
-	      class="com.concretepage.service.UserService"/>	      
+	      class="com.multiple.questions.service.impl.UserServiceImpl"/>	      
 	<authentication-manager>
 		<authentication-provider user-service-ref="myAppUserDetailsService">
 		    <password-encoder ref="bcryptEncoder"/>
