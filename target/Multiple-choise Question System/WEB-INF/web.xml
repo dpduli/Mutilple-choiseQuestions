@@ -6,7 +6,10 @@
 	<display-name>Multiple-choise Question System</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/applicationContext.xml</param-value>
+		<param-value>
+			/WEB-INF/spring/applicationContext.xml
+			/WEB-INF/spring/security-config.xml
+		</param-value>
 	</context-param>
 	<!-- Config Spring MVC -->
 	<servlet>
@@ -14,7 +17,9 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring/applicationContext.xml</param-value>
+			<param-value>
+				/WEB-INF/spring/applicationContext.xml
+			</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -22,36 +27,33 @@
 		<servlet-name>SpringMVCDispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>
+	<listener>
+    	<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  	</listener>
+  	
 	
 	<!-- Config Jersey -->
 	<servlet>
 		<servlet-name>JerseyServlet</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>com.multilple.questions.api</param-value>
-        </init-param>
-        <init-param>
-      		<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-      		<param-value>true</param-value>
-    	</init-param>
-    	<init-param>
-			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-			<param-value>com.multilple.questions.filter.CORSFilter</param-value>
+		<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>com.multiple.questions.api</param-value>
 		</init-param>
-    	<init-param>
-        	<param-name>jersey.config.server.mvc.templateBasePath.jsp</param-name>
-        	<param-value>/WEB-INF/views</param-value>
-    	</init-param>
-    	<init-param>
-    		<param-name>jersey.config.server.provider.classnames</param-name>
-    		<param-value>org.glassfish.jersey.server.mvc.jsp.JspMvcFeature</param-value>
+		<init-param>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+			<param-value>com.multiple.questions.filter.CORSFilter</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -65,5 +67,14 @@
 		<welcome-file>welcome.jsp</welcome-file>
 		<welcome-file>welcome.html</welcome-file>
 	</welcome-file-list>
-
+	
+	<!-- Spring security config -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>

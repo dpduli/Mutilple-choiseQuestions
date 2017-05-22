@@ -1,39 +1,58 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans    
                         http://www.springframework.org/schema/beans/spring-beans.xsd    
                         http://www.springframework.org/schema/context    
                         http://www.springframework.org/schema/context/spring-context.xsd    
                         http://www.springframework.org/schema/mvc    
-                        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-
+                        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                        http://www.springframework.org/schema/data/jpa 
+                        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd">
+                        
+	
+	<context:annotation-config />
+	
 	<!-- <mvc:annotation-driven /> -->
-	<context:component-scan base-package="com.multiple.questions" />
+	<context:component-scan base-package="com.multiple.questions.*" />
 	<context:component-scan base-package="com.multiple.questions.controller" />
-
+	<context:component-scan base-package="com.multiple.questions.controller.rest" />
+	<context:component-scan base-package="com.multiple.questions.dao" />
+	<context:component-scan base-package="com.multiple.questions.service" />
+	<context:component-scan base-package="com.multiple.questions.service.impl" />
+	<context:component-scan base-package="com.multiple.questions.api" />
+	
+	<!-- Mvc -->
+	<mvc:annotation-driven />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<!-- jpa repositories -->
+	<jpa:repositories base-package="com.multiple.questions.dao" 
+	 	entity-manager-factory-ref="entityManagerFactory" /> 
+	
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="classpath:jdbc.properties" />
 	</bean>
-
-	<!-- Data source connec common db -->
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="${driver}" />
-		<property name="url" value="${url}" />
-		<property name="username" value="${username}" />
-		<property name="password" value="${password}" />
-
+	<!-- Data source -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.gjt.mm.mysql.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/MultipleQuestions?autoReconnect=true&amp;createDatabaseIfNotExist=true&amp;" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
 	</bean>
-
-
-
 	<!-- Session factory -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
 		<property name="packagesToScan">
 			<list>
 				<value>com.multiple.questions.entities</value>
@@ -50,13 +69,33 @@
 			</map>
 		</property>
 	</bean>
+	
+	<!-- entityFactoryManager -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceProviderClass" value="org.hibernate.ejb.HibernatePersistence" />
+		<property name="persistenceUnitName" value="Multiple-choiseQuestions" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+			</bean>
+		</property>
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+				<entry key="hibernate.hbm2ddl.auto" value="validate" />
+				<entry key="hibernate.format_sql" value="true" />
+			</map>
+		</property>
+	</bean>
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource">
 			<ref bean="dataSource" />
 		</property>
 	</bean>
-	
+	<!-- Resource jsp -->
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix">
@@ -66,34 +105,25 @@
 			<value>.jsp</value>
 		</property>
 	</bean>
-
+	
+	<!-- transaction manager -->
+	 <tx:annotation-driven transaction-manager="transactionManager"/>
+	
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	<!-- MyBatis config <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
-		<property name="dataSource" ref="dataSource" /> <property name="mapperLocations" 
-		value="classpath:com/multiple/questions/mapper/*.xml" /> </bean> <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"> 
-		<property name="basePackage" value="com.multiple.questions.dao" /> <property 
-		name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property> </bean> 
-		<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" 
-		scope="prototype"> <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" 
-		/> </bean> -->
-		
-	<!-- Config jpa 
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="com.multiple.questions.entities" />
-		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
-		</property>
-		<property name="jpaProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
-			</props>
-		</property>
+	
+	<!-- Data source connec common db -->
+	<!--  
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
 	</bean>
 	-->
+
 </beans>
